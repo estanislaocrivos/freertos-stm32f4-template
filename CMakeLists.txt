@@ -12,6 +12,32 @@ set(MCU_FAMILY STM32F4xx)
 set(MCU_MODEL  STM32F401xE)
 
 #-----------------------------------------------------------
+# Example selection
+#
+# Usage: cmake -DEXAMPLE=02_queues ..
+#
+# Available examples:
+#   00_basic_blink  - Simple LED blink with one task
+#   01_priorities   - Two tasks with different priorities
+#   02_queues       - Producer/consumer with queues
+#   03_semaphores   - (coming soon)
+#   04_mutex        - (coming soon)
+#-----------------------------------------------------------
+
+set(EXAMPLE "00_basic_blink" CACHE STRING "Example to build")
+
+# Validate example exists
+if(EXISTS "${CMAKE_SOURCE_DIR}/examples/${EXAMPLE}/main.c")
+    set(APP_SOURCES "${CMAKE_SOURCE_DIR}/examples/${EXAMPLE}/main.c")
+    message(STATUS "Building example: ${EXAMPLE}")
+elseif(EXISTS "${CMAKE_SOURCE_DIR}/src/main.c")
+    set(APP_SOURCES "${CMAKE_SOURCE_DIR}/src/main.c")
+    message(STATUS "Building: src/main.c")
+else()
+    message(FATAL_ERROR "No main.c found! Use -DEXAMPLE=<name> or create src/main.c")
+endif()
+
+#-----------------------------------------------------------
 # Paths
 #-----------------------------------------------------------
 
@@ -37,14 +63,6 @@ set(FREERTOS_SOURCES
 
     # Heap implementation (heap_4 is most common - allows free())
     ${FREERTOS_PATH}/portable/MemMang/heap_4.c
-)
-
-#-----------------------------------------------------------
-# Application sources
-#-----------------------------------------------------------
-
-set(APP_SOURCES
-    ${CMAKE_SOURCE_DIR}/src/main.c
 )
 
 #-----------------------------------------------------------
