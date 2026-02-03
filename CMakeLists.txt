@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.20)
 
-# Nombre del proyecto y lenguajes
+# Project name and languages
 project(freertos-stm32f4 LANGUAGES C ASM)
 
-# Estándar de C
+# C standard
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
-# Chip target (cambiar según tu board)
+# Target chip (change according to your board)
 set(MCU_FAMILY STM32F4xx)
 set(MCU_MODEL  STM32F401xE)
 
@@ -21,7 +21,7 @@ set(FREERTOS_PATH   ${CMAKE_SOURCE_DIR}/freertos)
 set(STARTUP_PATH    ${CMAKE_SOURCE_DIR}/startup)
 
 #-----------------------------------------------------------
-# Fuentes de FreeRTOS
+# FreeRTOS sources
 #-----------------------------------------------------------
 
 set(FREERTOS_SOURCES
@@ -32,15 +32,15 @@ set(FREERTOS_SOURCES
     ${FREERTOS_PATH}/event_groups.c
     ${FREERTOS_PATH}/stream_buffer.c
 
-    # Port para ARM Cortex-M4 con FPU
+    # Port for ARM Cortex-M4 with FPU
     ${FREERTOS_PATH}/portable/GCC/ARM_CM4F/port.c
 
-    # Heap implementation (heap_4 es el más usado - permite free())
+    # Heap implementation (heap_4 is most common - allows free())
     ${FREERTOS_PATH}/portable/MemMang/heap_4.c
 )
 
 #-----------------------------------------------------------
-# Fuentes de la aplicación
+# Application sources
 #-----------------------------------------------------------
 
 set(APP_SOURCES
@@ -48,7 +48,7 @@ set(APP_SOURCES
 )
 
 #-----------------------------------------------------------
-# Startup y system
+# Startup and system
 #-----------------------------------------------------------
 
 set(STARTUP_SOURCES
@@ -66,7 +66,7 @@ set(LINKER_SCRIPT ${STARTUP_PATH}/stm32f401xe.ld)
 #-----------------------------------------------------------
 
 set(INCLUDE_DIRS
-    # Tu código
+    # Your code
     ${CMAKE_SOURCE_DIR}/src
 
     # CMSIS Core (core_cm4.h, etc)
@@ -81,7 +81,7 @@ set(INCLUDE_DIRS
 )
 
 #-----------------------------------------------------------
-# Ejecutable
+# Executable
 #-----------------------------------------------------------
 
 add_executable(${PROJECT_NAME}.elf
@@ -92,18 +92,18 @@ add_executable(${PROJECT_NAME}.elf
 
 target_include_directories(${PROJECT_NAME}.elf PRIVATE ${INCLUDE_DIRS})
 
-# Define para seleccionar el chip correcto en los headers de ST
+# Define to select the correct chip in ST headers
 target_compile_definitions(${PROJECT_NAME}.elf PRIVATE
     ${MCU_MODEL}
-    USE_FULL_ASSERT  # Habilita asserts de ST (opcional)
+    USE_FULL_ASSERT  # Enable ST asserts (optional)
 )
 
 #-----------------------------------------------------------
-# Flags de compilación
+# Compiler flags
 #-----------------------------------------------------------
 
-# -fdata-sections -ffunction-sections: pone cada función/variable en su
-# propia sección, permitiendo que el linker elimine código no usado
+# -fdata-sections -ffunction-sections: puts each function/variable in its
+# own section, allowing the linker to remove unused code
 
 target_compile_options(${PROJECT_NAME}.elf PRIVATE
     -Wall
@@ -117,60 +117,60 @@ target_compile_options(${PROJECT_NAME}.elf PRIVATE
 )
 
 #-----------------------------------------------------------
-# Flags de linker
+# Linker flags
 #-----------------------------------------------------------
 
 target_link_options(${PROJECT_NAME}.elf PRIVATE
     -T${LINKER_SCRIPT}
-    -Wl,--gc-sections              # Eliminar secciones no usadas
-    -Wl,--print-memory-usage       # Mostrar uso de memoria al compilar
-    -Wl,-Map=${PROJECT_NAME}.map   # Generar mapa de memoria
-    --specs=nano.specs             # Usar newlib-nano (más pequeña)
-    --specs=nosys.specs            # No usar syscalls (bare metal)
-    -lc                            # Link con libc
-    -lm                            # Link con libm (math)
-    -lnosys                        # Stubs para syscalls
+    -Wl,--gc-sections              # Remove unused sections
+    -Wl,--print-memory-usage       # Show memory usage when compiling
+    -Wl,-Map=${PROJECT_NAME}.map   # Generate memory map
+    --specs=nano.specs             # Use newlib-nano (smaller)
+    --specs=nosys.specs            # Don't use syscalls (bare metal)
+    -lc                            # Link with libc
+    -lm                            # Link with libm (math)
+    -lnosys                        # Stubs for syscalls
 )
 
 #-----------------------------------------------------------
-# Post-build: generar .bin y .hex, mostrar tamaño
+# Post-build: generate .bin and .hex, show size
 #-----------------------------------------------------------
 
 add_custom_command(TARGET ${PROJECT_NAME}.elf POST_BUILD
-    # Generar archivo .hex (para algunos programadores)
+    # Generate .hex file (for some programmers)
     COMMAND ${CMAKE_OBJCOPY} -O ihex ${PROJECT_NAME}.elf ${PROJECT_NAME}.hex
 
-    # Generar archivo .bin (para ST-Link, OpenOCD, etc)
+    # Generate .bin file (for ST-Link, OpenOCD, etc)
     COMMAND ${CMAKE_OBJCOPY} -O binary ${PROJECT_NAME}.elf ${PROJECT_NAME}.bin
 
-    # Mostrar tamaño de las secciones
+    # Show section sizes
     COMMAND ${CMAKE_SIZE} ${PROJECT_NAME}.elf
 
-    COMMENT "Generando ${PROJECT_NAME}.bin y ${PROJECT_NAME}.hex"
+    COMMENT "Generating ${PROJECT_NAME}.bin and ${PROJECT_NAME}.hex"
 )
 
 #-----------------------------------------------------------
-# Target para flashear (opcional, requiere st-flash instalado)
+# Flash target (requires st-flash installed)
 #-----------------------------------------------------------
 
 add_custom_target(flash
     COMMAND st-flash --connect-under-reset write ${PROJECT_NAME}.bin 0x08000000
     DEPENDS ${PROJECT_NAME}.elf
-    COMMENT "Flasheando ${PROJECT_NAME}.bin al STM32..."
+    COMMENT "Flashing ${PROJECT_NAME}.bin to STM32..."
 )
 
 #-----------------------------------------------------------
-# Targets para debugging
+# Debugging targets
 #-----------------------------------------------------------
 
-# Iniciar OpenOCD (correr en una terminal separada)
+# Start OpenOCD (run in a separate terminal)
 add_custom_target(openocd
     COMMAND openocd -f interface/stlink.cfg -f target/stm32f4x.cfg
-    COMMENT "Iniciando OpenOCD... (Ctrl+C para terminar)"
+    COMMENT "Starting OpenOCD... (Ctrl+C to stop)"
 )
 
-# Iniciar GDB y conectar a OpenOCD (requiere OpenOCD corriendo)
-# Obtener el directorio del compilador para encontrar GDB
+# Start GDB and connect to OpenOCD (requires OpenOCD running)
+# Get compiler directory to find GDB
 get_filename_component(TOOLCHAIN_BIN_DIR ${CMAKE_C_COMPILER} DIRECTORY)
 set(CMAKE_GDB "${TOOLCHAIN_BIN_DIR}/arm-none-eabi-gdb")
 
@@ -183,13 +183,13 @@ add_custom_target(debug
         -ex "break main"
         -ex "continue"
     DEPENDS ${PROJECT_NAME}.elf
-    COMMENT "Iniciando GDB..."
+    COMMENT "Starting GDB..."
 )
 
-# Flashear usando OpenOCD (alternativa a st-flash)
+# Flash using OpenOCD (alternative to st-flash)
 add_custom_target(flash-openocd
     COMMAND openocd -f interface/stlink.cfg -f target/stm32f4x.cfg
         -c "program ${PROJECT_NAME}.elf verify reset exit"
     DEPENDS ${PROJECT_NAME}.elf
-    COMMENT "Flasheando con OpenOCD..."
+    COMMENT "Flashing with OpenOCD..."
 )

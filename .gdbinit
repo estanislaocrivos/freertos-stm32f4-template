@@ -1,17 +1,17 @@
-# Conectar a OpenOCD
+# Connect to OpenOCD
 target extended-remote localhost:3333
 
-# Cargar símbolos del ELF
+# Load symbols from ELF
 file build/freertos-stm32f4.elf
 
-# Resetear y detener el chip
+# Reset and halt the chip
 monitor reset halt
 
-# Cargar el programa (opcional si ya flasheaste)
+# Load the program (optional if already flashed)
 # load
 
-# Poner breakpoint en main
+# Set breakpoint at main
 break main
 
-# Continuar hasta el breakpoint
+# Continue to breakpoint
 continue

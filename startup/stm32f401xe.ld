@@ -1,46 +1,46 @@
 /*
- * Linker script para STM32F401xE
+ * Linker script for STM32F401xE
  *
- * Memoria del STM32F401RE:
+ * STM32F401RE Memory:
  * - Flash: 512KB @ 0x08000000
  * - SRAM:   96KB @ 0x20000000
  */
 
-/* Punto de entrada - el símbolo donde empieza la ejecución */
+/* Entry point - symbol where execution begins */
 ENTRY(Reset_Handler)
 
-/* Stack inicial - al final de la RAM (crece hacia abajo) */
+/* Initial stack - at the end of RAM (grows downward) */
 _estack = ORIGIN(RAM) + LENGTH(RAM);
 
-/* Tamaño mínimo de heap y stack */
-_Min_Heap_Size = 0x200;   /* 512 bytes - FreeRTOS usa su propio heap */
-_Min_Stack_Size = 0x400;  /* 1KB para el stack inicial (antes del scheduler) */
+/* Minimum heap and stack sizes */
+_Min_Heap_Size = 0x200;   /* 512 bytes - FreeRTOS uses its own heap */
+_Min_Stack_Size = 0x400;  /* 1KB for initial stack (before scheduler) */
 
-/* Definición de regiones de memoria */
+/* Memory region definitions */
 MEMORY
 {
     FLASH (rx)  : ORIGIN = 0x08000000, LENGTH = 512K
     RAM   (rwx) : ORIGIN = 0x20000000, LENGTH = 96K
 }
 
-/* Secciones - cómo organizar el código/datos en memoria */
+/* Sections - how to organize code/data in memory */
 SECTIONS
 {
-    /* Vector table - DEBE estar al inicio de Flash */
+    /* Vector table - MUST be at the beginning of Flash */
     .isr_vector :
     {
         . = ALIGN(4);
-        KEEP(*(.isr_vector))  /* KEEP evita que el linker lo elimine */
+        KEEP(*(.isr_vector))  /* KEEP prevents linker from removing it */
         . = ALIGN(4);
     } >FLASH
 
-    /* Código del programa */
+    /* Program code */
     .text :
     {
         . = ALIGN(4);
-        *(.text)           /* Código normal */
-        *(.text*)          /* Código con sufijos (.text.startup, etc) */
-        *(.glue_7)         /* Glue ARM/Thumb */
+        *(.text)           /* Normal code */
+        *(.text*)          /* Code with suffixes (.text.startup, etc) */
+        *(.glue_7)         /* ARM/Thumb glue */
         *(.glue_7t)
         *(.eh_frame)
 
@@ -48,10 +48,10 @@ SECTIONS
         KEEP(*(.fini))
 
         . = ALIGN(4);
-        _etext = .;        /* Símbolo: fin del código */
+        _etext = .;        /* Symbol: end of code */
     } >FLASH
 
-    /* Datos de solo lectura (const, strings) */
+    /* Read-only data (const, strings) */
     .rodata :
     {
         . = ALIGN(4);
@@ -60,7 +60,7 @@ SECTIONS
         . = ALIGN(4);
     } >FLASH
 
-    /* Constructores C++ */
+    /* C++ constructors */
     .preinit_array :
     {
         PROVIDE_HIDDEN(__preinit_array_start = .);
@@ -85,39 +85,39 @@ SECTIONS
     } >FLASH
 
     /*
-     * Datos inicializados (.data)
-     * Valores almacenados en Flash, copiados a RAM en startup
+     * Initialized data (.data)
+     * Values stored in Flash, copied to RAM at startup
      */
-    _sidata = LOADADDR(.data);  /* Dirección en Flash donde están los valores */
+    _sidata = LOADADDR(.data);  /* Address in Flash where values are stored */
 
     .data :
     {
         . = ALIGN(4);
-        _sdata = .;        /* Inicio de .data en RAM */
+        _sdata = .;        /* Start of .data in RAM */
         *(.data)
         *(.data*)
         . = ALIGN(4);
-        _edata = .;        /* Fin de .data en RAM */
-    } >RAM AT> FLASH       /* Va en RAM, pero se carga desde Flash */
+        _edata = .;        /* End of .data in RAM */
+    } >RAM AT> FLASH       /* Goes in RAM, but loaded from Flash */
 
     /*
-     * Datos no inicializados (.bss)
-     * Se ponen a cero en startup
+     * Uninitialized data (.bss)
+     * Zeroed at startup
      */
     .bss :
     {
         . = ALIGN(4);
-        _sbss = .;         /* Inicio de .bss */
+        _sbss = .;         /* Start of .bss */
         __bss_start__ = _sbss;
         *(.bss)
         *(.bss*)
         *(COMMON)
         . = ALIGN(4);
-        _ebss = .;         /* Fin de .bss */
+        _ebss = .;         /* End of .bss */
         __bss_end__ = _ebss;
     } >RAM
 
-    /* Espacio para heap y stack */
+    /* Space for heap and stack */
     ._user_heap_stack :
     {
         . = ALIGN(8);
@@ -128,7 +128,7 @@ SECTIONS
         . = ALIGN(8);
     } >RAM
 
-    /* Descartar secciones innecesarias */
+    /* Discard unnecessary sections */
     /DISCARD/ :
     {
         *(.ARM.attributes)
