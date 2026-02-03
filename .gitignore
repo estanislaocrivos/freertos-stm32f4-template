@@ -53,3 +53,18 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+# Build directories
+/build/
+/Debug/
+/Release/
+/Out/
+/target/
+
+# AI generated files
+/.claude/
+
+# Execution scripts
+debug.sh
+flash.sh
+build.sh
