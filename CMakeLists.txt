@@ -61,6 +61,7 @@ set(LINKER_SCRIPT ${STARTUP_PATH}/stm32f401xe.ld)
 set(INCLUDE_DIRS
     # Your code
     ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/include
 
     # CMSIS Core (core_cm4.h, etc)
     ${CMSIS_PATH}
