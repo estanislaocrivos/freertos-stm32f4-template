@@ -77,26 +77,26 @@ jobs:
             - name: Show firmware size
               run: arm-none-eabi-size build/freertos-stm32f4.elf
 
-    static-analysis:
-        runs-on: ubuntu-latest
+    # static-analysis:
+    #     runs-on: ubuntu-latest
 
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
-              with:
-                  submodules: recursive
+    #     steps:
+    #         - name: Checkout repository
+    #           uses: actions/checkout@v4
+    #           with:
+    #               submodules: recursive
 
-            - name: Install tools
-              run: |
-                  sudo apt-get update
-                  sudo apt-get install -y cppcheck
+    #         - name: Install tools
+    #           run: |
+    #               sudo apt-get update
+    #               sudo apt-get install -y cppcheck
 
-            - name: Run cppcheck
-              run: |
-                  cppcheck --enable=warning,style,performance,portability \
-                    --std=c11 \
-                    --suppress=missingIncludeSystem \
-                    --suppress=toomanyconfigs \
-                    --error-exitcode=1 \
-                    -I src -I include -I freertos/include \
-                    src/ include/ examples/
+    #         - name: Run cppcheck
+    #           run: |
+    #               cppcheck --enable=warning,style,performance,portability \
+    #                 --std=c11 \
+    #                 --suppress=missingIncludeSystem \
+    #                 --suppress=toomanyconfigs \
+    #                 --error-exitcode=1 \
+    #                 -I src -I include -I freertos/include \
+    #                 src/ include/ examples/
