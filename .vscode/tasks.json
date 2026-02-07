@@ -1,0 +1,491 @@
+{
+    "version": "2.0.0",
+    "inputs": [
+        {
+            "id": "exampleChoice",
+            "type": "pickString",
+            "description": "Select example to build",
+            "options": [
+                "00_basic_blink",
+                "01_priorities",
+                "02_queues",
+                "03_queues_practical",
+                "04_semaphores"
+            ],
+            "default": "00_basic_blink"
+        },
+        {
+            "id": "buildType",
+            "type": "pickString",
+            "description": "Select build type",
+            "options": [
+                "Debug",
+                "Release",
+                "RelWithDebInfo",
+                "MinSizeRel"
+            ],
+            "default": "Debug"
+        }
+    ],
+    "tasks": [
+        // =====================================================================
+        // CMake Tasks (Primary build system)
+        // =====================================================================
+        {
+            "label": "CMake: Configure",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "-S", ".",
+                "-B", "build",
+                "-G", "Ninja",
+                "-DCMAKE_TOOLCHAIN_FILE=./cmake/arm-none-eabi.cmake",
+                "-DCMAKE_BUILD_TYPE=Debug",
+                "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "Configure CMake with default example (00_basic_blink)"
+        },
+        {
+            "label": "CMake: Configure Example",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "-S", ".",
+                "-B", "build",
+                "-G", "Ninja",
+                "-DCMAKE_TOOLCHAIN_FILE=./cmake/arm-none-eabi.cmake",
+                "-DCMAKE_BUILD_TYPE=${input:buildType}",
+                "-DEXAMPLE=${input:exampleChoice}",
+                "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "Configure CMake with selected example"
+        },
+        {
+            "label": "CMake: Build",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build", "build",
+                "--parallel", "8"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"],
+            "detail": "Build using CMake/Ninja"
+        },
+        {
+            "label": "CMake: Rebuild",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build", "build",
+                "--clean-first",
+                "--parallel", "8"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": ["$gcc"],
+            "detail": "Clean and rebuild"
+        },
+        {
+            "label": "CMake: Clean",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build", "build",
+                "--target", "clean"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "Clean CMake build artifacts"
+        },
+        {
+            "label": "CMake: Configure and Build Example",
+            "dependsOn": ["CMake: Configure Example", "CMake: Build"],
+            "dependsOrder": "sequence",
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "Configure and build selected example"
+        },
+        // =====================================================================
+        // Quick Example Build Tasks
+        // =====================================================================
+        {
+            "label": "Build: 00_basic_blink",
+            "type": "shell",
+            "command": "cmake -S . -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE=./cmake/arm-none-eabi.cmake -DCMAKE_BUILD_TYPE=Debug -DEXAMPLE=00_basic_blink && cmake --build build -j8",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": ["$gcc"],
+            "detail": "Configure and build basic_blink example"
+        },
+        {
+            "label": "Build: 01_priorities",
+            "type": "shell",
+            "command": "cmake -S . -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE=./cmake/arm-none-eabi.cmake -DCMAKE_BUILD_TYPE=Debug -DEXAMPLE=01_priorities && cmake --build build -j8",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": ["$gcc"],
+            "detail": "Configure and build priorities example"
+        },
+        {
+            "label": "Build: 02_queues",
+            "type": "shell",
+            "command": "cmake -S . -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE=./cmake/arm-none-eabi.cmake -DCMAKE_BUILD_TYPE=Debug -DEXAMPLE=02_queues && cmake --build build -j8",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": ["$gcc"],
+            "detail": "Configure and build queues example"
+        },
+        {
+            "label": "Build: 03_queues_practical",
+            "type": "shell",
+            "command": "cmake -S . -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE=./cmake/arm-none-eabi.cmake -DCMAKE_BUILD_TYPE=Debug -DEXAMPLE=03_queues_practical && cmake --build build -j8",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": ["$gcc"],
+            "detail": "Configure and build queues_practical example"
+        },
+        {
+            "label": "Build: 04_semaphores",
+            "type": "shell",
+            "command": "cmake -S . -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE=./cmake/arm-none-eabi.cmake -DCMAKE_BUILD_TYPE=Debug -DEXAMPLE=04_semaphores && cmake --build build -j8",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": ["$gcc"],
+            "detail": "Configure and build semaphores example"
+        },
+        // =====================================================================
+        // Flash Tasks
+        // =====================================================================
+        {
+            "label": "Flash (OpenOCD)",
+            "type": "shell",
+            "command": "openocd",
+            "args": [
+                "-f", "interface/stlink.cfg",
+                "-f", "target/stm32f4x.cfg",
+                "-c", "program build/freertos-stm32f4.elf verify reset exit"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "Flash firmware using OpenOCD"
+        },
+        {
+            "label": "Flash (ST-Flash)",
+            "type": "shell",
+            "command": "st-flash",
+            "args": [
+                "--reset",
+                "write",
+                "build/freertos-stm32f4.bin",
+                "0x08000000"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "Flash firmware using st-flash"
+        },
+        {
+            "label": "Flash (J-Link)",
+            "type": "shell",
+            "command": "JFlash",
+            "args": [
+                "-openprj", "build/freertos-stm32f4.elf",
+                "-auto",
+                "-startapp",
+                "-exit"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "Flash firmware using J-Link"
+        },
+        {
+            "label": "Build and Flash",
+            "dependsOn": ["CMake: Build", "Flash (OpenOCD)"],
+            "dependsOrder": "sequence",
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "Build and flash firmware"
+        },
+        // =====================================================================
+        // Test Tasks (Ceedling)
+        // =====================================================================
+        {
+            "label": "Build Tests",
+            "type": "shell",
+            "command": "ceedling",
+            "args": ["test:all"],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"],
+            "detail": "Run all unit tests with Ceedling"
+        },
+        {
+            "label": "Test Current File",
+            "type": "shell",
+            "command": "ceedling",
+            "args": ["test:${fileBasenameNoExtension}"],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "test",
+            "problemMatcher": ["$gcc"],
+            "detail": "Run tests for current file"
+        },
+        {
+            "label": "Test with Coverage",
+            "type": "shell",
+            "command": "ceedling",
+            "args": ["gcov:all"],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "test",
+            "problemMatcher": ["$gcc"],
+            "detail": "Run tests with coverage report"
+        },
+        {
+            "label": "Clean Tests",
+            "type": "shell",
+            "command": "ceedling",
+            "args": ["clobber"],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "test",
+            "problemMatcher": [],
+            "detail": "Clean test build artifacts"
+        },
+        // =====================================================================
+        // Analysis Tasks
+        // =====================================================================
+        {
+            "label": "Cppcheck",
+            "type": "shell",
+            "command": "cppcheck",
+            "args": [
+                "--enable=all",
+                "--std=c11",
+                "--suppress=missingIncludeSystem",
+                "--suppress=unmatchedSuppression",
+                "-I", "src",
+                "-I", "examples",
+                "src",
+                "examples"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "Run static analysis with cppcheck"
+        },
+        {
+            "label": "Clang-Tidy",
+            "type": "shell",
+            "command": "clang-tidy",
+            "args": [
+                "-p", "build",
+                "src/*.c",
+                "examples/**/*.c"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": ["$gcc"],
+            "detail": "Run static analysis with clang-tidy"
+        },
+        {
+            "label": "Format Check",
+            "type": "shell",
+            "command": "find src examples -name '*.c' -o -name '*.h' | xargs clang-format --dry-run --Werror",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "Check code formatting"
+        },
+        {
+            "label": "Format All",
+            "type": "shell",
+            "command": "find src examples -name '*.c' -o -name '*.h' | xargs clang-format -i",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "Format all source files"
+        },
+        // =====================================================================
+        // Documentation
+        // =====================================================================
+        {
+            "label": "Generate Docs",
+            "type": "shell",
+            "command": "doxygen",
+            "args": ["Doxyfile"],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "Generate Doxygen documentation"
+        },
+        // =====================================================================
+        // Debug Server Tasks
+        // =====================================================================
+        {
+            "label": "Start OpenOCD",
+            "type": "shell",
+            "command": "openocd",
+            "args": [
+                "-f", "interface/stlink.cfg",
+                "-f", "target/stm32f4x.cfg"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "isBackground": true,
+            "problemMatcher": {
+                "pattern": {
+                    "regexp": "^Error:",
+                    "message": 1
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "^Open On-Chip Debugger",
+                    "endsPattern": "^Info : Listening on port"
+                }
+            },
+            "detail": "Start OpenOCD GDB server"
+        },
+        {
+            "label": "Start J-Link GDB Server",
+            "type": "shell",
+            "command": "JLinkGDBServer",
+            "args": [
+                "-device", "STM32F401xE",
+                "-if", "SWD",
+                "-speed", "4000"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "isBackground": true,
+            "problemMatcher": [],
+            "detail": "Start J-Link GDB server"
+        },
+        // =====================================================================
+        // Utility Tasks
+        // =====================================================================
+        {
+            "label": "Size Report",
+            "type": "shell",
+            "command": "arm-none-eabi-size",
+            "args": ["-A", "-x", "build/freertos-stm32f4.elf"],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "Show firmware size"
+        },
+        {
+            "label": "Disassemble",
+            "type": "shell",
+            "command": "arm-none-eabi-objdump",
+            "args": ["-d", "-S", "build/freertos-stm32f4.elf"],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "Disassemble firmware"
+        },
+        {
+            "label": "Pre-commit Run",
+            "type": "shell",
+            "command": "pre-commit",
+            "args": ["run", "--all-files"],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "Run all pre-commit hooks"
+        },
+        // =====================================================================
+        // Legacy Make Tasks (if still using Makefile)
+        // =====================================================================
+        {
+            "label": "Make: Build",
+            "type": "shell",
+            "command": "make",
+            "args": ["-j8", "all"],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": ["$gcc"],
+            "detail": "Build firmware using Make"
+        },
+        {
+            "label": "Make: Clean",
+            "type": "shell",
+            "command": "make",
+            "args": ["clean"],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "Clean build artifacts (Make)"
+        }
+    ]
+}

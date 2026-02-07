@@ -1,0 +1,36 @@
+{
+    "recommendations": [
+        // C/C++ Core
+        "ms-vscode.cpptools",
+        "ms-vscode.cpptools-extension-pack",
+        // Clangd
+        "llvm-vs-code-extensions.vscode-clangd",
+        // Debugging Embedded
+        "marus25.cortex-debug",
+        // Build Systems
+        "ms-vscode.cmake-tools",
+        "ms-vscode.makefile-tools",
+        // Editor
+        "EditorConfig.EditorConfig",
+        // Git
+        "eamodio.gitlens",
+        "mhutchie.git-graph",
+        // Documentation
+        "cschlosser.doxdocgen",
+        // Code Quality
+        "streetsidesoftware.code-spell-checker",
+        "SonarSource.sonarlint-vscode",
+        // Productivity
+        "Gruntfuggly.todo-tree",
+        "wayou.vscode-todo-highlight",
+        "aaron-bond.better-comments",
+        "usernamehw.errorlens",
+        // Hex/Binary viewing
+        "ms-vscode.hexeditor",
+        // Serial Monitor
+        "ms-vscode.vscode-serial-monitor",
+        // ARM Assembly
+        "dan-c-underwood.arm",
+    ],
+    "unwantedRecommendations": []
+}
