@@ -1,0 +1,117 @@
+# Clang-Tidy Configuration
+# https://clang.llvm.org/extra/clang-tidy/
+#
+# Run: clang-tidy --config-file=.clang-tidy src/*.c
+
+---
+# Enabled checks
+Checks: >
+  -*,
+  bugprone-*,
+  cert-*,
+  clang-analyzer-*,
+  concurrency-*,
+  misc-*,
+  performance-*,
+  portability-*,
+  readability-identifier-naming,
+  readability-redundant-*,
+  readability-simplify-*,
+  -bugprone-easily-swappable-parameters,
+  -cert-dcl37-c,
+  -cert-dcl51-cpp,
+  -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,
+  -misc-no-recursion,
+
+# Treat warnings as errors
+WarningsAsErrors: ""
+
+# Headers to analyze (regex)
+HeaderFilterRegex: ".*"
+
+# Output format
+FormatStyle: file
+
+# Check-specific options
+CheckOptions:
+  # Naming conventions for embedded C
+  - key: readability-identifier-naming.GlobalConstantCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.GlobalConstantPrefix
+    value: ""
+
+  - key: readability-identifier-naming.MacroDefinitionCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.MacroDefinitionPrefix
+    value: ""
+
+  - key: readability-identifier-naming.EnumConstantCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.EnumConstantPrefix
+    value: ""
+
+  - key: readability-identifier-naming.FunctionCase
+    value: lower_case
+  - key: readability-identifier-naming.FunctionPrefix
+    value: ""
+
+  - key: readability-identifier-naming.GlobalVariableCase
+    value: lower_case
+  - key: readability-identifier-naming.GlobalVariablePrefix
+    value: g_
+
+  - key: readability-identifier-naming.LocalVariableCase
+    value: lower_case
+  - key: readability-identifier-naming.LocalVariablePrefix
+    value: ""
+
+  - key: readability-identifier-naming.ParameterCase
+    value: lower_case
+  - key: readability-identifier-naming.ParameterPrefix
+    value: ""
+
+  - key: readability-identifier-naming.StructCase
+    value: lower_case
+  - key: readability-identifier-naming.StructPrefix
+    value: ""
+  - key: readability-identifier-naming.StructSuffix
+    value: _t
+
+  - key: readability-identifier-naming.TypedefCase
+    value: lower_case
+  - key: readability-identifier-naming.TypedefSuffix
+    value: _t
+
+  - key: readability-identifier-naming.UnionCase
+    value: lower_case
+  - key: readability-identifier-naming.UnionSuffix
+    value: _t
+
+  - key: readability-identifier-naming.EnumCase
+    value: lower_case
+  - key: readability-identifier-naming.EnumSuffix
+    value: _e
+
+  # Static functions with optional prefix
+  - key: readability-identifier-naming.StaticFunctionCase
+    value: lower_case
+
+  # Performance checks
+  - key: performance-unnecessary-value-param.AllowedTypes
+    value: ""
+
+  # Misc
+  - key: misc-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic
+    value: true
+
+  # Cert
+  - key: cert-err33-c.CheckedFunctions
+    value: ""
+
+  # Bugprone
+  - key: bugprone-argument-comment.StrictMode
+    value: true
+  - key: bugprone-assert-side-effect.AssertMacros
+    value: "assert,ASSERT,configASSERT"
+  - key: bugprone-sizeof-expression.WarnOnSizeOfIntegerExpression
+    value: true
