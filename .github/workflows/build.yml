@@ -96,6 +96,7 @@ jobs:
                   cppcheck --enable=warning,style,performance,portability \
                     --std=c11 \
                     --suppress=missingIncludeSystem \
+                    --suppress=toomanyconfigs \
                     --error-exitcode=1 \
                     -I src -I include -I freertos/include \
-                    src/ examples/
+                    src/ include/ examples/
