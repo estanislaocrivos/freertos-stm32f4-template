@@ -9,19 +9,20 @@
  * This decouples "what to do" from "how to do it"
  */
 
+/* ========================================================================== */
+
 #include "FreeRTOS.h"
 #include "stm32f4xx.h"
 #include "task.h"
 #include "queue.h"
 
-/*-----------------------------------------------------------
- * LED Configuration
- *----------------------------------------------------------*/
+/* ========================================================================== */
 
 #define LED_PORT GPIOA
-#define LED_PIN 5
+#define LED_PIN  5
 
-static void led_init(void) {
+static void led_init(void)
+{
     RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
     LED_PORT->MODER &= ~(3U << (LED_PIN * 2));
     LED_PORT->MODER |= (1U << (LED_PIN * 2));
@@ -30,14 +31,19 @@ static void led_init(void) {
     LED_PORT->PUPDR &= ~(3U << (LED_PIN * 2));
 }
 
-static void led_on(void)  { LED_PORT->BSRR = (1U << LED_PIN); }
-static void led_off(void) { LED_PORT->BSRR = (1U << (LED_PIN + 16)); }
+static void led_on(void)
+{
+    LED_PORT->BSRR = (1U << LED_PIN);
+}
+static void led_off(void)
+{
+    LED_PORT->BSRR = (1U << (LED_PIN + 16));
+}
 
-/*-----------------------------------------------------------
- * Message types for the queue
- *----------------------------------------------------------*/
+/* ========================================================================== */
 
-typedef enum {
+typedef enum
+{
     LED_CMD_OFF,
     LED_CMD_ON,
     LED_CMD_BLINK_SLOW,
@@ -47,16 +53,15 @@ typedef enum {
 /* Global queue handle */
 QueueHandle_t xLedQueue;
 
-/*-----------------------------------------------------------
- * Producer Task: Sends commands to the queue
- *
- * Cycles through different LED patterns
- *----------------------------------------------------------*/
-void vProducerTask(void *pvParameters) {
+/* ========================================================================== */
+
+void vProducerTask(void* pvParameters)
+{
     (void)pvParameters;
     LedCommand_t cmd;
 
-    for (;;) {
+    for (;;)
+    {
         /* Send: LED ON for 2 seconds */
         cmd = LED_CMD_ON;
         xQueueSend(xLedQueue, &cmd, portMAX_DELAY);
@@ -79,32 +84,33 @@ void vProducerTask(void *pvParameters) {
     }
 }
 
-/*-----------------------------------------------------------
- * Consumer Task: Receives commands and executes them
- *
- * Blocks on queue until a command arrives
- *----------------------------------------------------------*/
-void vConsumerTask(void *pvParameters) {
+/* ========================================================================== */
+
+void vConsumerTask(void* pvParameters)
+{
     (void)pvParameters;
     LedCommand_t cmd;
-    TickType_t blinkDelay = 0;
+    TickType_t   blinkDelay = 0;
 
-    for (;;) {
+    for (;;)
+    {
         /*
          * Check for new command (non-blocking with 100ms timeout)
          * This allows us to keep blinking while waiting for new commands
          */
-        if (xQueueReceive(xLedQueue, &cmd, pdMS_TO_TICKS(100)) == pdTRUE) {
+        if (xQueueReceive(xLedQueue, &cmd, pdMS_TO_TICKS(100)) == pdTRUE)
+        {
             /* New command received - update behavior */
-            switch (cmd) {
+            switch (cmd)
+            {
                 case LED_CMD_OFF:
                     led_off();
-                    blinkDelay = 0;  /* Stop blinking */
+                    blinkDelay = 0; /* Stop blinking */
                     break;
 
                 case LED_CMD_ON:
                     led_on();
-                    blinkDelay = 0;  /* Stop blinking */
+                    blinkDelay = 0; /* Stop blinking */
                     break;
 
                 case LED_CMD_BLINK_SLOW:
@@ -118,7 +124,8 @@ void vConsumerTask(void *pvParameters) {
         }
 
         /* If blinking mode is active, toggle LED */
-        if (blinkDelay > 0) {
+        if (blinkDelay > 0)
+        {
             led_on();
             vTaskDelay(blinkDelay);
             led_off();
@@ -127,10 +134,10 @@ void vConsumerTask(void *pvParameters) {
     }
 }
 
-/*-----------------------------------------------------------
- * Main
- *----------------------------------------------------------*/
-int main(void) {
+/* ========================================================================== */
+
+int main(void)
+{
     led_init();
 
     /*
@@ -144,13 +151,17 @@ int main(void) {
      */
     xLedQueue = xQueueCreate(5, sizeof(LedCommand_t));
 
-    if (xLedQueue == NULL) {
+    if (xLedQueue == NULL)
+    {
         /* Queue creation failed - blink error */
-        for (;;) {
+        for (;;)
+        {
             led_on();
-            for (volatile int i = 0; i < 50000; i++);
+            for (volatile int i = 0; i < 50000; i++)
+                ;
             led_off();
-            for (volatile int i = 0; i < 50000; i++);
+            for (volatile int i = 0; i < 50000; i++)
+                ;
         }
     }
 
@@ -160,15 +171,18 @@ int main(void) {
 
     vTaskStartScheduler();
 
-    for (;;);
+    for (;;)
+        ;
     return 0;
 }
 
-/*-----------------------------------------------------------
- * System init
- *----------------------------------------------------------*/
-void SystemInit(void) {
+/* ========================================================================== */
+
+void SystemInit(void)
+{
 #if (__FPU_PRESENT == 1) && (__FPU_USED == 1)
-    SCB->CPACR |= ((3UL << 10*2) | (3UL << 11*2));
+    SCB->CPACR |= ((3UL << 10 * 2) | (3UL << 11 * 2));
 #endif
 }
+
+/* ========================================================================== */
