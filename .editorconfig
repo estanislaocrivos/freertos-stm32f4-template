@@ -1,0 +1,77 @@
+# EditorConfig - Editor-agnostic configuration (https://editorconfig.org)
+
+root = true
+
+# Default settings for all files
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+# C/C++ files
+[*.{c,h,cpp,hpp}]
+indent_style = space
+indent_size = 4
+max_line_length = 80
+
+# System/vendor headers (do not modify format)
+[**/vendor/**]
+indent_style = unset
+indent_size = unset
+
+# Makefiles require tabs
+[Makefile]
+indent_style = tab
+indent_size = 8
+
+[*.mk]
+indent_style = tab
+indent_size = 8
+
+# CMake
+[CMakeLists.txt]
+indent_style = space
+indent_size = 2
+
+[*.cmake]
+indent_style = space
+indent_size = 2
+
+# Scripts
+[*.{sh,bash}]
+indent_style = space
+indent_size = 2
+
+# YAML (configs, CI/CD)
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+# JSON
+[*.json]
+indent_style = space
+indent_size = 2
+
+# Markdown
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = off
+
+# Linker scripts
+[*.ld]
+indent_style = space
+indent_size = 4
+
+# Assembly
+[*.{s,S,asm}]
+indent_style = space
+indent_size = 8
+
+# Git commit messages
+[COMMIT_EDITMSG]
+max_line_length = 72
+indent_style = space
+indent_size = 2

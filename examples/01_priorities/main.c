@@ -4,18 +4,19 @@
  * Example: Two tasks with different priorities
  */
 
+/* ========================================================================== */
+
 #include "FreeRTOS.h"
 #include "stm32f4xx.h"
 #include "task.h"
 
-/*-----------------------------------------------------------
- * LED Configuration (PA5 on Nucleo-F401RE)
- *----------------------------------------------------------*/
+/* ========================================================================== */
 
 #define LED_PORT GPIOA
-#define LED_PIN 5
+#define LED_PIN  5
 
-static void led_init(void) {
+static void led_init(void)
+{
     RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
     LED_PORT->MODER &= ~(3U << (LED_PIN * 2));
     LED_PORT->MODER |= (1U << (LED_PIN * 2));
@@ -24,18 +25,28 @@ static void led_init(void) {
     LED_PORT->PUPDR &= ~(3U << (LED_PIN * 2));
 }
 
-static void led_on(void)  { LED_PORT->BSRR = (1U << LED_PIN); }
-static void led_off(void) { LED_PORT->BSRR = (1U << (LED_PIN + 16)); }
+static void led_on(void)
+{
+    LED_PORT->BSRR = (1U << LED_PIN);
+}
+static void led_off(void)
+{
+    LED_PORT->BSRR = (1U << (LED_PIN + 16));
+}
 
-/*-----------------------------------------------------------
+/* ========================================================================== */
+
+/*
  * Task 1: Slow blink (Priority 1)
  *
  * Turns LED ON for 1 second, then OFF for 1 second
- *----------------------------------------------------------*/
-void vTaskSlowBlink(void *pvParameters) {
+ */
+void vTaskSlowBlink(void* pvParameters)
+{
     (void)pvParameters;
 
-    for (;;) {
+    for (;;)
+    {
         led_on();
         vTaskDelay(pdMS_TO_TICKS(1000));  // ON for 1 second
 
@@ -44,21 +55,26 @@ void vTaskSlowBlink(void *pvParameters) {
     }
 }
 
-/*-----------------------------------------------------------
+/* ========================================================================== */
+
+/*
  * Task 2: Fast blink burst (Priority 2 - HIGHER)
  *
  * Every 5 seconds, does a fast blink burst
  * Because it has higher priority, it "interrupts" Task 1
- *----------------------------------------------------------*/
-void vTaskFastBurst(void *pvParameters) {
+ */
+void vTaskFastBurst(void* pvParameters)
+{
     (void)pvParameters;
 
-    for (;;) {
+    for (;;)
+    {
         // Wait 5 seconds (during this time, Task 1 runs)
         vTaskDelay(pdMS_TO_TICKS(5000));
 
         // Fast burst (10 quick blinks)
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 10; i++)
+        {
             led_on();
             vTaskDelay(pdMS_TO_TICKS(50));
             led_off();
@@ -67,10 +83,10 @@ void vTaskFastBurst(void *pvParameters) {
     }
 }
 
-/*-----------------------------------------------------------
- * Main
- *----------------------------------------------------------*/
-int main(void) {
+/* ========================================================================== */
+
+int main(void)
+{
     led_init();
 
     // Task 1: Lower priority (1)
@@ -83,15 +99,18 @@ int main(void) {
     vTaskStartScheduler();
 
     // Error: should never reach here
-    for (;;);
+    for (;;)
+        ;
     return 0;
 }
 
-/*-----------------------------------------------------------
- * System init
- *----------------------------------------------------------*/
-void SystemInit(void) {
+/* ========================================================================== */
+
+void SystemInit(void)
+{
 #if (__FPU_PRESENT == 1) && (__FPU_USED == 1)
-    SCB->CPACR |= ((3UL << 10*2) | (3UL << 11*2));
+    SCB->CPACR |= ((3UL << 10 * 2) | (3UL << 11 * 2));
 #endif
 }
+
+/* ========================================================================== */

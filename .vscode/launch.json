@@ -1,0 +1,213 @@
+{
+    "version": "0.2.0",
+    "inputs": [
+        {
+            "id": "exampleChoice",
+            "type": "pickString",
+            "description": "Select example to build and debug",
+            "options": [
+                "00_basic_blink",
+                "01_priorities",
+                "02_queues",
+                "03_queues_practical",
+                "04_semaphores"
+            ],
+            "default": "00_basic_blink"
+        }
+    ],
+    "configurations": [
+        // =================================================================
+        // OpenOCD + ST-Link (Recommended for STM32)
+        // =================================================================
+        {
+            "name": "Debug (OpenOCD)",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "openocd",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/build/freertos-stm32f4.elf",
+            "configFiles": [
+                "interface/stlink.cfg",
+                "target/stm32f4x.cfg"
+            ],
+            "searchDir": [],
+            "runToEntryPoint": "main",
+            "showDevDebugOutput": "none",
+            "svdFile": "${workspaceFolder}/STM32F401.svd",
+            "preLaunchTask": "CMake: Build",
+            "preRestartCommands": [
+                "load",
+                "enable breakpoint",
+                "monitor reset init"
+            ],
+            "postRestartCommands": [],
+            "device": "STM32F401xE",
+            "interface": "swd",
+            "rtos": "FreeRTOS",
+            "liveWatch": {
+                "enabled": true,
+                "samplesPerSecond": 4
+            }
+        },
+        {
+            "name": "Debug Example (OpenOCD)",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "openocd",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/build/freertos-stm32f4.elf",
+            "configFiles": [
+                "interface/stlink.cfg",
+                "target/stm32f4x.cfg"
+            ],
+            "searchDir": [],
+            "runToEntryPoint": "main",
+            "showDevDebugOutput": "none",
+            "svdFile": "${workspaceFolder}/STM32F401.svd",
+            "preLaunchTask": "CMake: Configure Example",
+            "preRestartCommands": [
+                "load",
+                "enable breakpoint",
+                "monitor reset init"
+            ],
+            "postRestartCommands": [],
+            "device": "STM32F401xE",
+            "interface": "swd",
+            "rtos": "FreeRTOS",
+            "liveWatch": {
+                "enabled": true,
+                "samplesPerSecond": 4
+            }
+        },
+        {
+            "name": "Attach (OpenOCD)",
+            "type": "cortex-debug",
+            "request": "attach",
+            "servertype": "openocd",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/build/freertos-stm32f4.elf",
+            "configFiles": [
+                "interface/stlink.cfg",
+                "target/stm32f4x.cfg"
+            ],
+            "svdFile": "${workspaceFolder}/STM32F401.svd",
+            "device": "STM32F401xE",
+            "interface": "swd",
+            "rtos": "FreeRTOS"
+        },
+        // =================================================================
+        // J-Link
+        // =================================================================
+        {
+            "name": "Debug (J-Link)",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "jlink",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/build/freertos-stm32f4.elf",
+            "device": "STM32F401xE",
+            "interface": "swd",
+            "serialNumber": "",
+            "runToEntryPoint": "main",
+            "svdFile": "${workspaceFolder}/STM32F401.svd",
+            "preLaunchTask": "CMake: Build",
+            "rtos": "FreeRTOS",
+            "rttConfig": {
+                "enabled": true,
+                "address": "auto",
+                "decoders": [
+                    {
+                        "port": 0,
+                        "type": "console",
+                        "label": "RTT Console"
+                    }
+                ]
+            }
+        },
+        // =================================================================
+        // ST-Util (ST-Link native)
+        // =================================================================
+        {
+            "name": "Debug (ST-Util)",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "stutil",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/build/freertos-stm32f4.elf",
+            "device": "STM32F401xE",
+            "svdFile": "${workspaceFolder}/STM32F401.svd",
+            "runToEntryPoint": "main",
+            "preLaunchTask": "CMake: Build",
+            "rtos": "FreeRTOS"
+        },
+        // =================================================================
+        // QEMU (Emulator - uses netduinoplus2 which is STM32F4 based)
+        // =================================================================
+        {
+            "name": "Debug (QEMU)",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "qemu",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/build/freertos-stm32f4.elf",
+            "cpu": "cortex-m4",
+            "machine": "netduinoplus2",
+            "preLaunchTask": "CMake: Build"
+        },
+        // =================================================================
+        // PyOCD
+        // =================================================================
+        {
+            "name": "Debug (PyOCD)",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "pyocd",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/build/freertos-stm32f4.elf",
+            "targetId": "stm32f401xe",
+            "runToEntryPoint": "main",
+            "svdFile": "${workspaceFolder}/STM32F401.svd",
+            "preLaunchTask": "CMake: Build",
+            "rtos": "FreeRTOS"
+        },
+        // =================================================================
+        // External GDB Server (connect to running server on port 3333)
+        // =================================================================
+        {
+            "name": "Debug (External GDB Server)",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "external",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/build/freertos-stm32f4.elf",
+            "gdbTarget": "localhost:3333",
+            "svdFile": "${workspaceFolder}/STM32F401.svd",
+            "runToEntryPoint": "main",
+            "preLaunchTask": "CMake: Build",
+            "rtos": "FreeRTOS"
+        },
+        // =================================================================
+        // Native Tests (Host GDB for unit tests)
+        // =================================================================
+        {
+            "name": "Debug Tests (Native)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/test/test_runner",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "Build Tests"
+        }
+    ]
+}

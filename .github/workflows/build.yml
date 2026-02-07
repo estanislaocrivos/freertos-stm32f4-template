@@ -1,0 +1,102 @@
+name: Build
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        strategy:
+            matrix:
+                example:
+                    - 00_basic_blink
+                    - 01_priorities
+                    - 02_queues
+                    - 03_queues_practical
+                    - 04_semaphores
+                build_type: [Debug, Release]
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              with:
+                  submodules: recursive
+
+            - name: Install ARM GCC Toolchain
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y gcc-arm-none-eabi libnewlib-arm-none-eabi
+
+            - name: Install Ninja
+              run: sudo apt-get install -y ninja-build
+
+            - name: Configure CMake
+              run: |
+                  cmake -S . -B build -G Ninja \
+                    -DCMAKE_TOOLCHAIN_FILE=./cmake/arm-none-eabi.cmake \
+                    -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+                    -DEXAMPLE=${{ matrix.example }}
+
+            - name: Build
+              run: cmake --build build --parallel
+
+            - name: Show firmware size
+              run: arm-none-eabi-size build/freertos-stm32f4.elf
+
+    build-src-main:
+        runs-on: ubuntu-latest
+        name: Build src/main.c
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              with:
+                  submodules: recursive
+
+            - name: Install ARM GCC Toolchain
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y gcc-arm-none-eabi libnewlib-arm-none-eabi
+
+            - name: Install Ninja
+              run: sudo apt-get install -y ninja-build
+
+            - name: Configure CMake
+              run: |
+                  cmake -S . -B build -G Ninja \
+                    -DCMAKE_TOOLCHAIN_FILE=./cmake/arm-none-eabi.cmake \
+                    -DCMAKE_BUILD_TYPE=Debug
+
+            - name: Build
+              run: cmake --build build --parallel
+
+            - name: Show firmware size
+              run: arm-none-eabi-size build/freertos-stm32f4.elf
+
+    # static-analysis:
+    #     runs-on: ubuntu-latest
+
+    #     steps:
+    #         - name: Checkout repository
+    #           uses: actions/checkout@v4
+    #           with:
+    #               submodules: recursive
+
+    #         - name: Install tools
+    #           run: |
+    #               sudo apt-get update
+    #               sudo apt-get install -y cppcheck
+
+    #         - name: Run cppcheck
+    #           run: |
+    #               cppcheck --enable=warning,style,performance,portability \
+    #                 --std=c11 \
+    #                 --suppress=missingIncludeSystem \
+    #                 --suppress=toomanyconfigs \
+    #                 --error-exitcode=1 \
+    #                 -I src -I include -I freertos/include \
+    #                 src/ include/ examples/
