@@ -2,7 +2,7 @@ name: Build
 
 on:
     push:
-        branches: [main, chore/tidy-up-and-add-tooling]
+        branches: [main]
     pull_request:
         branches: [main]
 
