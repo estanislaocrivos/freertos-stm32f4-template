@@ -16,19 +16,20 @@
  *    - Prevents race conditions
  */
 
+/* ========================================================================== */
+
 #include "FreeRTOS.h"
 #include "stm32f4xx.h"
 #include "task.h"
 #include "semphr.h"
 
-/*-----------------------------------------------------------
- * LED Configuration
- *----------------------------------------------------------*/
+/* ========================================================================== */
 
 #define LED_PORT GPIOA
-#define LED_PIN 5
+#define LED_PIN  5
 
-static void led_init(void) {
+static void led_init(void)
+{
     RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
     LED_PORT->MODER &= ~(3U << (LED_PIN * 2));
     LED_PORT->MODER |= (1U << (LED_PIN * 2));
@@ -37,32 +38,35 @@ static void led_init(void) {
     LED_PORT->PUPDR &= ~(3U << (LED_PIN * 2));
 }
 
-static void led_on(void)     { LED_PORT->BSRR = (1U << LED_PIN); }
-static void led_off(void)    { LED_PORT->BSRR = (1U << (LED_PIN + 16)); }
-static void led_toggle(void) { LED_PORT->ODR ^= (1U << LED_PIN); }
+static void led_on(void)
+{
+    LED_PORT->BSRR = (1U << LED_PIN);
+}
+static void led_off(void)
+{
+    LED_PORT->BSRR = (1U << (LED_PIN + 16));
+}
+static void led_toggle(void)
+{
+    LED_PORT->ODR ^= (1U << LED_PIN);
+}
 
-/*-----------------------------------------------------------
- * Semaphores
- *----------------------------------------------------------*/
+/* ========================================================================== */
 
-SemaphoreHandle_t xBinarySemaphore;    /* Event signaling */
-SemaphoreHandle_t xCountingSemaphore;  /* Resource counting */
-SemaphoreHandle_t xMutex;              /* Mutual exclusion */
+SemaphoreHandle_t xBinarySemaphore;   /* Event signaling */
+SemaphoreHandle_t xCountingSemaphore; /* Resource counting */
+SemaphoreHandle_t xMutex;             /* Mutual exclusion */
 
-/*-----------------------------------------------------------
- * PART 1: Binary Semaphore - Event Signaling
- *
- * Simulates: Button press detection
- * - Generator simulates button presses (random intervals)
- * - Handler responds to each press
- *----------------------------------------------------------*/
+/* ========================================================================== */
 
-void vEventGenerator(void *pvParameters) {
+void vEventGenerator(void* pvParameters)
+{
     (void)pvParameters;
-    int delay_times[] = {500, 1000, 200, 1500, 300};  /* Varying intervals */
-    int index = 0;
+    int delay_times[] = {500, 1000, 200, 1500, 300}; /* Varying intervals */
+    int index         = 0;
 
-    for (;;) {
+    for (;;)
+    {
         /* Wait some time (simulating button debounce/press timing) */
         vTaskDelay(pdMS_TO_TICKS(delay_times[index]));
         index = (index + 1) % 5;
@@ -77,12 +81,15 @@ void vEventGenerator(void *pvParameters) {
     }
 }
 
-void vEventHandler(void *pvParameters) {
+void vEventHandler(void* pvParameters)
+{
     (void)pvParameters;
 
-    for (;;) {
+    for (;;)
+    {
         /* Wait for event (blocks until semaphore is given) */
-        if (xSemaphoreTake(xBinarySemaphore, portMAX_DELAY) == pdTRUE) {
+        if (xSemaphoreTake(xBinarySemaphore, portMAX_DELAY) == pdTRUE)
+        {
             /* Event received! Respond with LED blink */
             led_on();
             vTaskDelay(pdMS_TO_TICKS(100));
@@ -91,25 +98,21 @@ void vEventHandler(void *pvParameters) {
     }
 }
 
-/*-----------------------------------------------------------
- * PART 2: Counting Semaphore - Resource Pool
- *
- * Simulates: Limited resource pool (like connection pool)
- * - 3 "resources" available
- * - Multiple workers try to use them
- * - Must wait if all resources are in use
- *----------------------------------------------------------*/
+/* ========================================================================== */
 
 #define NUM_RESOURCES 3
-#define NUM_WORKERS 5
+#define NUM_WORKERS   5
 
-void vWorkerTask(void *pvParameters) {
+void vWorkerTask(void* pvParameters)
+{
     int worker_id = (int)(intptr_t)pvParameters;
-    (void)worker_id;  /* Would use for logging in real app */
+    (void)worker_id; /* Would use for logging in real app */
 
-    for (;;) {
+    for (;;)
+    {
         /* Try to acquire a resource (wait up to 1 second) */
-        if (xSemaphoreTake(xCountingSemaphore, pdMS_TO_TICKS(1000)) == pdTRUE) {
+        if (xSemaphoreTake(xCountingSemaphore, pdMS_TO_TICKS(1000)) == pdTRUE)
+        {
             /*
              * Got a resource! Do work.
              * Show we're working by keeping LED on longer
@@ -124,7 +127,9 @@ void vWorkerTask(void *pvParameters) {
 
             /* Rest before trying again */
             vTaskDelay(pdMS_TO_TICKS(200));
-        } else {
+        }
+        else
+        {
             /* Timeout - couldn't get resource
              * In real app: log warning, try alternative, etc.
              */
@@ -132,22 +137,28 @@ void vWorkerTask(void *pvParameters) {
     }
 }
 
-/*-----------------------------------------------------------
+/* ========================================================================== */
+
+/*
  * PART 3: Mutex - Protect Shared Resource
  *
  * Two tasks want to do different LED patterns.
  * Without mutex: patterns would interfere (race condition)
  * With mutex: each task completes its pattern atomically
- *----------------------------------------------------------*/
+ */
 
-void vPatternTask1(void *pvParameters) {
+void vPatternTask1(void* pvParameters)
+{
     (void)pvParameters;
 
-    for (;;) {
+    for (;;)
+    {
         /* Acquire mutex before touching LED */
-        if (xSemaphoreTake(xMutex, portMAX_DELAY) == pdTRUE) {
+        if (xSemaphoreTake(xMutex, portMAX_DELAY) == pdTRUE)
+        {
             /* We own the LED now - do pattern: 3 fast blinks */
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 3; i++)
+            {
                 led_on();
                 vTaskDelay(pdMS_TO_TICKS(100));
                 led_off();
@@ -163,12 +174,15 @@ void vPatternTask1(void *pvParameters) {
     }
 }
 
-void vPatternTask2(void *pvParameters) {
+void vPatternTask2(void* pvParameters)
+{
     (void)pvParameters;
 
-    for (;;) {
+    for (;;)
+    {
         /* Acquire mutex before touching LED */
-        if (xSemaphoreTake(xMutex, portMAX_DELAY) == pdTRUE) {
+        if (xSemaphoreTake(xMutex, portMAX_DELAY) == pdTRUE)
+        {
             /* We own the LED now - do pattern: long blink */
             led_on();
             vTaskDelay(pdMS_TO_TICKS(500));
@@ -183,14 +197,13 @@ void vPatternTask2(void *pvParameters) {
     }
 }
 
-/*-----------------------------------------------------------
- * Main - Choose which demo to run
- *----------------------------------------------------------*/
+/* ========================================================================== */
 
 /* Change this to select demo: 1, 2, or 3 */
 #define DEMO_SELECT 3
 
-int main(void) {
+int main(void)
+{
     led_init();
 
 #if DEMO_SELECT == 1
@@ -202,7 +215,7 @@ int main(void) {
     xBinarySemaphore = xSemaphoreCreateBinary();
 
     xTaskCreate(vEventGenerator, "Generator", 128, NULL, 1, NULL);
-    xTaskCreate(vEventHandler,   "Handler",   128, NULL, 2, NULL);
+    xTaskCreate(vEventHandler, "Handler", 128, NULL, 2, NULL);
 
 #elif DEMO_SELECT == 2
     /*
@@ -212,7 +225,8 @@ int main(void) {
      */
     xCountingSemaphore = xSemaphoreCreateCounting(NUM_RESOURCES, NUM_RESOURCES);
 
-    for (int i = 0; i < NUM_WORKERS; i++) {
+    for (int i = 0; i < NUM_WORKERS; i++)
+    {
         xTaskCreate(vWorkerTask, "Worker", 128, (void*)(intptr_t)i, 1, NULL);
     }
 
@@ -231,15 +245,18 @@ int main(void) {
 
     vTaskStartScheduler();
 
-    for (;;);
+    for (;;)
+        ;
     return 0;
 }
 
-/*-----------------------------------------------------------
- * System init
- *----------------------------------------------------------*/
-void SystemInit(void) {
+/* ========================================================================== */
+
+void SystemInit(void)
+{
 #if (__FPU_PRESENT == 1) && (__FPU_USED == 1)
-    SCB->CPACR |= ((3UL << 10*2) | (3UL << 11*2));
+    SCB->CPACR |= ((3UL << 10 * 2) | (3UL << 11 * 2));
 #endif
 }
+
+/* ========================================================================== */
