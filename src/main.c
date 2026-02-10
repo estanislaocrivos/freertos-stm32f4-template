@@ -1,14 +1,8 @@
-/**
- * @file main.c
- * @brief Main application entry point
- */
-
-/* ========================================================================== */
-
 #include "main.h"
+
 #include "FreeRTOS.h"
-#include "task.h"
 #include "stm32f4xx.h"
+#include "task.h"
 
 /* ========================================================================== */
 
@@ -23,8 +17,8 @@ static void prvMainTask(void* pvParameters);
 int main(void)
 {
     /* Create main task */
-    xTaskCreate(prvMainTask, "Main", STACK_SIZE, NULL, tskIDLE_PRIORITY + 1,
-                NULL);
+    xTaskCreate(
+        prvMainTask, "Main", STACK_SIZE, NULL, tskIDLE_PRIORITY + 1, NULL);
 
     /* Start scheduler */
     vTaskStartScheduler();

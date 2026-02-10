@@ -10,6 +10,7 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 # Target chip (change according to your board)
 set(MCU_FAMILY STM32F4xx)
 set(MCU_MODEL  STM32F401xE)
+# TODO: consider adding support for other STM32F4 models (F405, F407, etc)
 
 # Example selection:
 # Usage: cmake -DEXAMPLE=02_queues ..

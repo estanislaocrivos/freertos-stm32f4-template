@@ -36,9 +36,12 @@
             "type": "shell",
             "command": "cmake",
             "args": [
-                "-S", ".",
-                "-B", "build",
-                "-G", "Ninja",
+                "-S",
+                ".",
+                "-B",
+                "build",
+                "-G",
+                "Ninja",
                 "-DCMAKE_TOOLCHAIN_FILE=./cmake/arm-none-eabi.cmake",
                 "-DCMAKE_BUILD_TYPE=Debug",
                 "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
@@ -55,9 +58,12 @@
             "type": "shell",
             "command": "cmake",
             "args": [
-                "-S", ".",
-                "-B", "build",
-                "-G", "Ninja",
+                "-S",
+                ".",
+                "-B",
+                "build",
+                "-G",
+                "Ninja",
                 "-DCMAKE_TOOLCHAIN_FILE=./cmake/arm-none-eabi.cmake",
                 "-DCMAKE_BUILD_TYPE=${input:buildType}",
                 "-DEXAMPLE=${input:exampleChoice}",
@@ -75,8 +81,10 @@
             "type": "shell",
             "command": "cmake",
             "args": [
-                "--build", "build",
-                "--parallel", "8"
+                "--build",
+                "build",
+                "--parallel",
+                "8"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -85,7 +93,9 @@
                 "kind": "build",
                 "isDefault": true
             },
-            "problemMatcher": ["$gcc"],
+            "problemMatcher": [
+                "$gcc"
+            ],
             "detail": "Build using CMake/Ninja"
         },
         {
@@ -93,15 +103,19 @@
             "type": "shell",
             "command": "cmake",
             "args": [
-                "--build", "build",
+                "--build",
+                "build",
                 "--clean-first",
-                "--parallel", "8"
+                "--parallel",
+                "8"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
             },
             "group": "build",
-            "problemMatcher": ["$gcc"],
+            "problemMatcher": [
+                "$gcc"
+            ],
             "detail": "Clean and rebuild"
         },
         {
@@ -109,8 +123,10 @@
             "type": "shell",
             "command": "cmake",
             "args": [
-                "--build", "build",
-                "--target", "clean"
+                "--build",
+                "build",
+                "--target",
+                "clean"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -121,7 +137,10 @@
         },
         {
             "label": "CMake: Configure and Build Example",
-            "dependsOn": ["CMake: Configure Example", "CMake: Build"],
+            "dependsOn": [
+                "CMake: Configure Example",
+                "CMake: Build"
+            ],
             "dependsOrder": "sequence",
             "group": "build",
             "problemMatcher": [],
@@ -138,7 +157,9 @@
                 "cwd": "${workspaceFolder}"
             },
             "group": "build",
-            "problemMatcher": ["$gcc"],
+            "problemMatcher": [
+                "$gcc"
+            ],
             "detail": "Configure and build basic_blink example"
         },
         {
@@ -149,7 +170,9 @@
                 "cwd": "${workspaceFolder}"
             },
             "group": "build",
-            "problemMatcher": ["$gcc"],
+            "problemMatcher": [
+                "$gcc"
+            ],
             "detail": "Configure and build priorities example"
         },
         {
@@ -160,7 +183,9 @@
                 "cwd": "${workspaceFolder}"
             },
             "group": "build",
-            "problemMatcher": ["$gcc"],
+            "problemMatcher": [
+                "$gcc"
+            ],
             "detail": "Configure and build queues example"
         },
         {
@@ -171,7 +196,9 @@
                 "cwd": "${workspaceFolder}"
             },
             "group": "build",
-            "problemMatcher": ["$gcc"],
+            "problemMatcher": [
+                "$gcc"
+            ],
             "detail": "Configure and build queues_practical example"
         },
         {
@@ -182,7 +209,9 @@
                 "cwd": "${workspaceFolder}"
             },
             "group": "build",
-            "problemMatcher": ["$gcc"],
+            "problemMatcher": [
+                "$gcc"
+            ],
             "detail": "Configure and build semaphores example"
         },
         // =====================================================================
@@ -193,9 +222,12 @@
             "type": "shell",
             "command": "openocd",
             "args": [
-                "-f", "interface/stlink.cfg",
-                "-f", "target/stm32f4x.cfg",
-                "-c", "program build/freertos-stm32f4.elf verify reset exit"
+                "-f",
+                "interface/stlink.cfg",
+                "-f",
+                "target/stm32f4x.cfg",
+                "-c",
+                "program build/freertos-stm32f4.elf verify reset exit"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -226,7 +258,8 @@
             "type": "shell",
             "command": "JFlash",
             "args": [
-                "-openprj", "build/freertos-stm32f4.elf",
+                "-openprj",
+                "build/freertos-stm32f4.elf",
                 "-auto",
                 "-startapp",
                 "-exit"
@@ -240,7 +273,10 @@
         },
         {
             "label": "Build and Flash",
-            "dependsOn": ["CMake: Build", "Flash (OpenOCD)"],
+            "dependsOn": [
+                "CMake: Build",
+                "Flash (OpenOCD)"
+            ],
             "dependsOrder": "sequence",
             "group": "build",
             "problemMatcher": [],
@@ -253,7 +289,9 @@
             "label": "Build Tests",
             "type": "shell",
             "command": "ceedling",
-            "args": ["test:all"],
+            "args": [
+                "test:all"
+            ],
             "options": {
                 "cwd": "${workspaceFolder}"
             },
@@ -261,38 +299,50 @@
                 "kind": "test",
                 "isDefault": true
             },
-            "problemMatcher": ["$gcc"],
+            "problemMatcher": [
+                "$gcc"
+            ],
             "detail": "Run all unit tests with Ceedling"
         },
         {
             "label": "Test Current File",
             "type": "shell",
             "command": "ceedling",
-            "args": ["test:${fileBasenameNoExtension}"],
+            "args": [
+                "test:${fileBasenameNoExtension}"
+            ],
             "options": {
                 "cwd": "${workspaceFolder}"
             },
             "group": "test",
-            "problemMatcher": ["$gcc"],
+            "problemMatcher": [
+                "$gcc"
+            ],
             "detail": "Run tests for current file"
         },
         {
             "label": "Test with Coverage",
             "type": "shell",
             "command": "ceedling",
-            "args": ["gcov:all"],
+            "args": [
+                "gcov:all"
+            ],
             "options": {
                 "cwd": "${workspaceFolder}"
             },
             "group": "test",
-            "problemMatcher": ["$gcc"],
+            "problemMatcher": [
+                "$gcc"
+            ],
             "detail": "Run tests with coverage report"
         },
         {
             "label": "Clean Tests",
             "type": "shell",
             "command": "ceedling",
-            "args": ["clobber"],
+            "args": [
+                "clobber"
+            ],
             "options": {
                 "cwd": "${workspaceFolder}"
             },
@@ -312,8 +362,10 @@
                 "--std=c11",
                 "--suppress=missingIncludeSystem",
                 "--suppress=unmatchedSuppression",
-                "-I", "src",
-                "-I", "examples",
+                "-I",
+                "src",
+                "-I",
+                "examples",
                 "src",
                 "examples"
             ],
@@ -329,7 +381,8 @@
             "type": "shell",
             "command": "clang-tidy",
             "args": [
-                "-p", "build",
+                "-p",
+                "build",
                 "src/*.c",
                 "examples/**/*.c"
             ],
@@ -337,7 +390,9 @@
                 "cwd": "${workspaceFolder}"
             },
             "group": "build",
-            "problemMatcher": ["$gcc"],
+            "problemMatcher": [
+                "$gcc"
+            ],
             "detail": "Run static analysis with clang-tidy"
         },
         {
@@ -369,7 +424,9 @@
             "label": "Generate Docs",
             "type": "shell",
             "command": "doxygen",
-            "args": ["Doxyfile"],
+            "args": [
+                "Doxyfile"
+            ],
             "options": {
                 "cwd": "${workspaceFolder}"
             },
@@ -385,8 +442,10 @@
             "type": "shell",
             "command": "openocd",
             "args": [
-                "-f", "interface/stlink.cfg",
-                "-f", "target/stm32f4x.cfg"
+                "-f",
+                "interface/stlink.cfg",
+                "-f",
+                "target/stm32f4x.cfg"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -410,9 +469,12 @@
             "type": "shell",
             "command": "JLinkGDBServer",
             "args": [
-                "-device", "STM32F401xE",
-                "-if", "SWD",
-                "-speed", "4000"
+                "-device",
+                "STM32F401xE",
+                "-if",
+                "SWD",
+                "-speed",
+                "4000"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -428,7 +490,11 @@
             "label": "Size Report",
             "type": "shell",
             "command": "arm-none-eabi-size",
-            "args": ["-A", "-x", "build/freertos-stm32f4.elf"],
+            "args": [
+                "-A",
+                "-x",
+                "build/freertos-stm32f4.elf"
+            ],
             "options": {
                 "cwd": "${workspaceFolder}"
             },
@@ -440,7 +506,11 @@
             "label": "Disassemble",
             "type": "shell",
             "command": "arm-none-eabi-objdump",
-            "args": ["-d", "-S", "build/freertos-stm32f4.elf"],
+            "args": [
+                "-d",
+                "-S",
+                "build/freertos-stm32f4.elf"
+            ],
             "options": {
                 "cwd": "${workspaceFolder}"
             },
@@ -452,7 +522,10 @@
             "label": "Pre-commit Run",
             "type": "shell",
             "command": "pre-commit",
-            "args": ["run", "--all-files"],
+            "args": [
+                "run",
+                "--all-files"
+            ],
             "options": {
                 "cwd": "${workspaceFolder}"
             },
@@ -467,19 +540,26 @@
             "label": "Make: Build",
             "type": "shell",
             "command": "make",
-            "args": ["-j8", "all"],
+            "args": [
+                "-j8",
+                "all"
+            ],
             "options": {
                 "cwd": "${workspaceFolder}"
             },
             "group": "build",
-            "problemMatcher": ["$gcc"],
+            "problemMatcher": [
+                "$gcc"
+            ],
             "detail": "Build firmware using Make"
         },
         {
             "label": "Make: Clean",
             "type": "shell",
             "command": "make",
-            "args": ["clean"],
+            "args": [
+                "clean"
+            ],
             "options": {
                 "cwd": "${workspaceFolder}"
             },

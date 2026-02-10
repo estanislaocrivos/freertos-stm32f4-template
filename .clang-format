@@ -1,5 +1,6 @@
-# Clang-Format Configuration
 ---
+# CLANG-FORMAT CONFIGURATION FILE
+
 BasedOnStyle: Google
 Language: Cpp
 
@@ -19,7 +20,7 @@ KeepEmptyLinesAtTheStartOfBlocks: false
 InsertNewlineAtEOF: true
 
 # --- Alignment ---
-AlignAfterOpenBracket: Align
+AlignAfterOpenBracket: AlwaysBreak
 AlignConsecutiveAssignments: true
 AlignConsecutiveDeclarations: true
 AlignConsecutiveMacros: AcrossEmptyLinesAndComments
@@ -44,7 +45,7 @@ BreakBeforeTernaryOperators: false
 BreakStringLiterals: true
 AlwaysBreakAfterReturnType: None
 AlwaysBreakBeforeMultilineStrings: false
-BinPackArguments: true
+BinPackArguments: false
 BinPackParameters: false
 
 # --- Pointer & References ---
@@ -66,8 +67,13 @@ SpacesInParentheses: false
 SpacesInSquareBrackets: false
 
 # --- Includes ---
-SortIncludes: false
-IncludeBlocks: Preserve
+SortIncludes: CaseSensitive
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex:    '^".*"'
+    Priority: 1
+  - Regex:    '^<.*>'
+    Priority: 2
 
 # --- Comments ---
 ReflowComments: true

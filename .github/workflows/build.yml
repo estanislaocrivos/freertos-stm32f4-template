@@ -77,6 +77,7 @@ jobs:
             - name: Show firmware size
               run: arm-none-eabi-size build/freertos-stm32f4.elf
 
+    # TODO: add static analysis job
     # static-analysis:
     #     runs-on: ubuntu-latest
 
