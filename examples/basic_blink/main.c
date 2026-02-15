@@ -138,19 +138,3 @@ int main(void)
 }
 
 /* ========================================================================== */
-
-/*
- * SystemInit is called by the startup code before main().
- * Here you could configure the PLL to run at 84MHz.
- * For now we leave the default: HSI @ 16MHz.
- */
-void SystemInit(void)
-{
-/* Enable FPU (Cortex-M4F) */
-#if (__FPU_PRESENT == 1) && (__FPU_USED == 1)
-    SCB->CPACR |= ((3UL << 10 * 2) | (3UL << 11 * 2)); /* CP10 and CP11 Full
-                                                          Access */
-#endif
-}
-
-/* ========================================================================== */
