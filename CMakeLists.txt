@@ -53,6 +53,7 @@ set(FREERTOS_SOURCES
 # Startup and system
 set(STARTUP_SOURCES
     ${DEVICE_PATH}/Source/Templates/gcc/startup_stm32f401xe.s
+    ${DEVICE_PATH}/Source/Templates/system_stm32f4xx.c
 )
 
 # Linker script
