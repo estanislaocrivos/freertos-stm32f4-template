@@ -181,8 +181,74 @@ void vTask1(void *pvParameters)
 
 ### Queues
 
-Message queues are objects that allow the communication between tasks in a FIFO way. A queue can be written and read by multiple tasks. A task can be in the blocked state waiting for data to be written in a particular queue, or can be waiting to write in a particular queue. A block timeout can be specified during which the task will wait blocked until any of the aforementioned events happen.
+Message queues are objects that allow the communication between tasks in a FIFO way. A queue can be written and read by multiple tasks. A task can be in the blocked state waiting for data to be written in a particular queue, or can be waiting to write in a particular queue. A block timeout can be specified during which the task will wait blocked until any of the aforementioned events happen. You may create tasks by calling the `xQueueCreate` API function:
 
 ```c
-xQueueHandle xQueueCreate()
+xQueueHandle xQueueCreate(unsigned portBASE_TYPE uxQueueLength,
+                          unsigned portBASE_TYPE uxItemSize);
+```
+
+- `uxQueueLength`: max. number of items that the queue can hold at any one time (e.g. 10 elements of size `uint8_t`).
+- `uxItemSize`: the size of each element that can be stored in the queue (e.g. `sizeof(uint8_t)`).
+- `xQueueHandle`: A non-null handle will be returned in case the queue could be allocated successfully. This handle should be stored in order to manipulate the queue.
+
+#### Example
+
+```c
+void vTask1(void* pvParameters)
+{
+    xQueueHandle* xQueue = (xQueueHandle*)pvParameters;
+    uint8_t value_to_send = 1;
+
+    for (;;)
+    {
+        portBASE_TYPE xStatus = xQueueSendToBack(xQueue, &value_to_send, 0);
+        if (xStatus != pdPASS)
+        {
+            vPrintString("Could not send data to the queue from Task 1");
+        }
+        vTaskDelay(pdMS_TO_TICKS(2000));
+    }
+}
+
+void vTask2(void* pvParameters)
+{
+    xQueueHandle* xQueue = (xQueueHandle*)pvParameters;
+    uint8_t received_value = 0;
+
+    for (;;)
+    {
+        portBASE_TYPE xStatus = xQueueReceive(xQueue, &received_value, portMAX_DELAY);
+        if (xStatus == pdPASS)
+        {
+            vPrintString("Received data on Task 2 from Task 1");
+        }
+        vTaskDelay(pdMS_TO_TICKS(500));
+    }
+}
+
+int main(void)
+{
+    /* Create the queue and check its handler */
+    xQueueHandle xQueue = xQueueCreate(10, sizeof(uint8_t));
+    if (xQueue == NULL)
+    {
+        vPrintString("Could not create the queue");
+        return -1;
+    }
+
+    if (xTaskCreate(vTask1, "Task 1", 128, (void*)(xQueue), 1, NULL) == pdTRUE)
+    {
+        /* Task created successfully */
+    }
+    if (xTaskCreate(vTask2, "Task 2", 128, (void*)(xQueue), 2, NULL) == pdTRUE)
+    {
+        /* Task created successfully */
+    }
+
+    vTaskStartScheduler();
+
+    /* The app. should never reach this point */
+    return 0;
+}
 ```
