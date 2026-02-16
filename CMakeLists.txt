@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 
 # Project name and languages
-project(freertos-stm32f4 LANGUAGES C ASM)
+project(freertos-stm32f4-for-learning LANGUAGES C ASM)
 
 # C standard
 set(CMAKE_C_STANDARD 11)
@@ -33,6 +33,7 @@ set(CMSIS_PATH      ${CMAKE_SOURCE_DIR}/drivers/CMSIS_5/CMSIS/Core/Include)
 set(DEVICE_PATH     ${CMAKE_SOURCE_DIR}/drivers/cmsis_device_f4)
 set(FREERTOS_PATH   ${CMAKE_SOURCE_DIR}/freertos)
 set(STARTUP_PATH    ${CMAKE_SOURCE_DIR}/startup)
+set(DRIVERS_PATH  ${CMAKE_SOURCE_DIR}/drivers/stm32f401re_drivers)
 
 # FreeRTOS sources
 set(FREERTOS_SOURCES
@@ -56,6 +57,13 @@ set(STARTUP_SOURCES
     ${DEVICE_PATH}/Source/Templates/system_stm32f4xx.c
 )
 
+# Drivers
+set(DRIVERS_SOURCES
+    ${DRIVERS_PATH}/src/uart2.c
+    ${DRIVERS_PATH}/src/led.c
+    ${DRIVERS_PATH}/src/logging.c
+)
+
 # Linker script
 set(LINKER_SCRIPT ${STARTUP_PATH}/stm32f401xe.ld)
 
@@ -64,6 +72,9 @@ set(INCLUDE_DIRS
     # Your code
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/include
+
+    # Drivers
+    ${DRIVERS_PATH}/include
 
     # CMSIS Core (core_cm4.h, etc)
     ${CMSIS_PATH}
@@ -81,6 +92,7 @@ add_executable(${PROJECT_NAME}.elf
     ${APP_SOURCES}
     ${FREERTOS_SOURCES}
     ${STARTUP_SOURCES}
+    ${DRIVERS_SOURCES}
 )
 
 target_include_directories(${PROJECT_NAME}.elf PRIVATE ${INCLUDE_DIRS})
