@@ -160,3 +160,29 @@ int main(void)
     return 0;
 }
 ```
+
+### Tasks Delays
+
+After a tasks does its job, it should block itself so other tasks can enter the ready state to be executed. For this purpose, the `vTaskDelay` API function can be used for this purpose. This function takes the number of ticks for which the task will block. You may use the `pdMS_TO_TICKS(delay_ms)` macro for converting milliseconds to ticks:
+
+```c
+/* Task implementation */
+void vTask1(void *pvParameters)
+{
+    const char *pcTaskName = "Task 1 is running";
+
+    for (;;)
+    {
+        vPrintString(pcTaskName);
+        vTaskDelay(pdMS_TO_TICKS(500));
+    }
+}
+```
+
+### Queues
+
+Message queues are objects that allow the communication between tasks in a FIFO way. A queue can be written and read by multiple tasks. A task can be in the blocked state waiting for data to be written in a particular queue, or can be waiting to write in a particular queue. A block timeout can be specified during which the task will wait blocked until any of the aforementioned events happen.
+
+```c
+xQueueHandle xQueueCreate()
+```

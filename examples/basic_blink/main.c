@@ -30,6 +30,10 @@ void vTask1(void* pvParameters)
 
 /* ========================================================================== */
 
+/* In this application there is only one task. This task runs and then it blocks
+ * itself for 500ms, then it runs again and so on, because it is the only task
+ * on the app. */
+
 int main(void)
 {
     led_init();

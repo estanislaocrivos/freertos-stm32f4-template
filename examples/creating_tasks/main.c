@@ -91,6 +91,15 @@ int main(void)
 
     log_err("Could not initialize scheduler");
 
+    for (;;)
+    {
+        /* Very fast error blink */
+        led_toggle();
+        for (volatile int i = 0; i < 100000; i++)
+        {
+        }
+    }
+
     /* The application should never reach here */
     return 0;
 }
