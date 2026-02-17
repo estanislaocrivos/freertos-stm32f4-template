@@ -2,6 +2,7 @@
  * FreeRTOS STM32F4 Template
  *
  * Basic example with two tasks that blink the LED.
+ *
  * Nucleo-F401RE onboard LED: PA5
  */
 
@@ -31,8 +32,8 @@ void vTask1(void* pvParameters)
 /* ========================================================================== */
 
 /* In this application there is only one task. This task runs and then it blocks
- * itself for 500ms, then it runs again and so on, because it is the only task
- * on the app. */
+ * itself for 500 milliseconds, then it runs again and so on, because it is the
+ * only task on the app. */
 
 int main(void)
 {

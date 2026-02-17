@@ -53,7 +53,7 @@ void vTask1(void* pvParameters)
         {
             log_err("Could not send data to the queue from Task 1");
         }
-        vTaskDelay(pdMS_TO_TICKS(2000));
+        vTaskDelay(pdMS_TO_TICKS(500));
     }
 }
 
@@ -72,7 +72,7 @@ void vTask2(void* pvParameters)
         {
             vPrintString("Received data on Task 2 from Task 1");
         }
-        vTaskDelay(pdMS_TO_TICKS(500));
+        vTaskDelay(pdMS_TO_TICKS(3000));
     }
 }
 
@@ -106,7 +106,8 @@ int main(void)
     led_on();
     vTaskStartScheduler();
 
-    log_err("Could not initialize scheduler");
+    /* Should never reach here */
+    log_err("Scheduler failed to start");
 
     for (;;)
     {

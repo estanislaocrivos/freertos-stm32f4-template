@@ -84,12 +84,12 @@ int main(void)
 
     led_on();
 
-    /* Start the scheduler.
-     * This function NEVER returns if everything is OK.
+    /* Start the scheduler. This function NEVER returns if everything is OK.
      * From here on, FreeRTOS takes control of the CPU. */
     vTaskStartScheduler();
 
-    log_err("Could not initialize scheduler");
+    /* Should never reach here */
+    log_err("Scheduler failed to start");
 
     for (;;)
     {
@@ -100,7 +100,6 @@ int main(void)
         }
     }
 
-    /* The application should never reach here */
     return 0;
 }
 
