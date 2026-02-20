@@ -100,26 +100,17 @@ A single task definition/declaration can be used to create multiple tasks, becau
 
 ### Creating a Task
 
-For a task to be created, you may call the `xTaskCreate` function. This function's declaration is shown below:
+For a task to be created, you may call the [`xTaskCreate`](https://www.freertos.org/Documentation/02-Kernel/04-API-references/01-Task-creation/01-xTaskCreate) function. This function's declaration is shown below:
 
 ```c
-portBASE_TYPE xTaskCreate(pdTASK_CODE pvTaskCode,
-                          const signed char * const pcName,
-                          unsigned short usStackDepth,
-                          void *pvParameters,
-                          unsigned portBASE_TYPE uxpriority,
-                          xTaskHandle *pxCreatedTask);
+ BaseType_t xTaskCreate( TaskFunction_t pvTaskCode,
+                         const char * const pcName,
+                         const configSTACK_DEPTH_TYPE uxStackDepth,
+                         void *pvParameters,
+                         UBaseType_t uxPriority,
+                         TaskHandle_t *pxCreatedTask
+                       );
 ```
-
-Refer to the [FreeRTOS API documentation](https://www.freertos.org/Documentation/02-Kernel/04-API-references/01-Task-creation/01-xTaskCreate) for more information on each parameter.
-
-<!-- - `pvTaskCode`: this is a pointer to the function which implements the task functionality. As stated before, the task functionality must be implemented as a `void vTaskName(void *pvParameters)` kind of function.
-- `pcName`: a descriptive name for the task. This name is not used by FreeRTOS in any way, as it acts solely as a debugging aid. Note that this parameter is implemented as a `const` pointer to a `const` char (string stored in flash memory).
-- `usStackDepth`: this parameter refers to the stack depth. Every time FreeRTOS swaps in a task for execution, it must reserve storage in the stack for the stack resources. This value specifies the stack depth in terms of words, so for example, in a Cortex M3 microcontroller the word size is 32-bits. In this case, a parameter with value 100 would mean 400 bytes of stack availability for all the function's local variables.
-- `pvParameters`: the value assigned to this parameter will be passed to the task when called by the scheduler.
-- `uxPriority`: defines the priority at which the task will execute. Priorities start from 0 being the lowest one, to `configMAX_PRIORITIES - 1`. You can define the number of priorities on the FreeRTOS configuration, although it is always preferrable to use the lowest number of priorities required in order to avoid wasting RAM memory.
-- `pxCreatedTask`: this parameter can be used to pass out a handle to the task being created. This handle can be used to reference the task in API calls which, for example, could change the priority of the task. Can be set to NULL for most cases.
-- Returns `portBASE_TYPE`: the task will return `pdTRUE` if the task has been created successfully or `errCOULD_NOT_ALLOCATE_REQUIRED_MEMORY` if the task could not be created due to lack of memory resources. -->
 
 #### Example
 
@@ -165,7 +156,7 @@ int main(void)
 
 ### Tasks Delays
 
-After a tasks does its job, it should block itself so other tasks can enter the ready state to be executed. For this purpose, the `vTaskDelay` API function can be used for this purpose. This function takes the number of ticks for which the task will block. You may use the `pdMS_TO_TICKS(delay_ms)` macro for converting milliseconds to ticks:
+After a tasks does its job, it should block itself so other tasks can enter the ready state to be executed. To achieve this condition, a task could wait for a timeout or for a resource. the [vTaskDelay](https://www.freertos.org/Documentation/02-Kernel/04-API-references/02-Task-control/01-vTaskDelay) API function can be used for this purpose. This function takes the number of ticks for which the task will block. You may use the `pdMS_TO_TICKS(delay_ms)` macro for converting milliseconds to ticks:
 
 ```c
 /* Task implementation */
@@ -183,16 +174,12 @@ void vTask1(void *pvParameters)
 
 ### Message Queues
 
-Message queues are objects that allow the communication and synchronization between tasks. A queue consists in a FIFO messaging buffer which can be written and read by multiple tasks. A task can be in the blocked state waiting for data to be written in a particular queue, or can be waiting to write in a particular queue. A block timeout can be specified during which the task will wait blocked until any of the aforementioned events happen. You may create a message queue by calling the `xQueueCreate` API function:
+Message queues are objects that allow the communication and synchronization between tasks. A queue consists in a FIFO messaging buffer which can be written and read by multiple tasks. A task can be in the blocked state waiting for data to be written in a particular queue, or can be waiting to write in a particular queue. A block timeout can be specified during which the task will wait blocked until any of the aforementioned events happen. You may create a message queue by calling the [xQueueCreate](https://www.freertos.org/Documentation/02-Kernel/04-API-references/06-Queues/01-xQueueCreate) API function:
 
 ```c
-xQueueHandle xQueueCreate(unsigned portBASE_TYPE uxQueueLength,
-                          unsigned portBASE_TYPE uxItemSize);
+ QueueHandle_t xQueueCreate( UBaseType_t uxQueueLength,
+                             UBaseType_t uxItemSize );
 ```
-
-<!-- - `uxQueueLength`: max. number of items that the queue can hold at any one time (e.g. 10 elements of size `uint8_t`).
-- `uxItemSize`: the size of each element that can be stored in the queue (e.g. `sizeof(uint8_t)`).
-- Returns `xQueueHandle`: A non-null handle will be returned in case the queue could be allocated successfully. This handle should be stored in order to manipulate the queue. -->
 
 #### Example
 
@@ -257,11 +244,8 @@ int main(void)
 
 ### Binary Semaphores
 
-A semaphore is a synchronization object which can be used to unblock a task each time a particular interrupt occurs, effectively synchronizing the task with the interrupt. A Binary Semaphore can be used to unblock a task each time a particular interrupt occurs, effectively synchronizing the task with the interrupt. A binary semaphore can be thought as a queue of length 1 (it is actually implemented as one), which can be full or empty (only two states). By calling `xSemaphoreTake`, a task enters the blocked state until the semaphore is freed from within an interrupt or another task. You may create a binary semaphore by calling the `vSemaphoreCreateBinary` API function, described below:
+A [semaphore](https://www.freertos.org/Documentation/02-Kernel/04-API-references/10-Semaphore-and-Mutexes/00-Semaphores) is a synchronization object which can be used to unblock a task each time a particular interrupt occurs, effectively synchronizing the task with the interrupt. A Binary Semaphore can be used to unblock a task each time a particular interrupt occurs, effectively synchronizing the task with the interrupt. A binary semaphore can be thought as a queue of length 1 (it is actually implemented as one), which can be full or empty (only two states). By calling `xSemaphoreTake`, a task enters the blocked state until the semaphore is freed from within an interrupt or another task. You may create a binary semaphore by calling the [xSemaphoreCreateBinary](https://www.freertos.org/Documentation/02-Kernel/04-API-references/10-Semaphore-and-Mutexes/01-xSemaphoreCreateBinary) API function, described below:
 
 ```c
-void vSemaphoreCreateBinary(xSemaphoreHandle xSemaphore);
+SemaphoreHandle_t xSemaphoreCreateBinary( void );
 ```
-
-<!-- - `xSemaphore`: The semaphore being created. Because `vSemaphoreCreateBinary` is actually implemented as a macro, this variable should be passed directly rather than by reference.
-- Returns `void`: if the semaphore handler is not null, it means that the binary semaphore could be created successfully. -->
